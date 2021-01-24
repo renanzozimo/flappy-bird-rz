@@ -69,29 +69,33 @@ const getReadyMessage = {
     );
   }
 }
-
-const floor = {
-  sX: 0,
-  sY: 610,
-  w: 223,
-  h: 112,
-  x: 0,
-  y: canvas.height - 112,
-  draw(ctx) {
-    ctx.drawImage(
-      sprites,
-      this.sX, this.sY,
-      this.w, this.h,
-      this.x, this.y,
-      this.w, this.h
-    );
-    ctx.drawImage(
-      sprites,
-      this.sX, this.sY,
-      this.w, this.h,
-      (this.x + this.w), this.y,
-      this.w, this.h
-    );
+function createFloor() {
+  return {
+    sX: 0,
+    sY: 610,
+    w: 223,
+    h: 112,
+    x: 0,
+    y: canvas.height - 112,
+    update() {
+      this.x = (this.x - 1) % (this.w / 2);
+    },
+    draw(ctx) {
+      ctx.drawImage(
+        sprites,
+        this.sX, this.sY,
+        this.w, this.h,
+        this.x, this.y,
+        this.w, this.h
+      );
+      ctx.drawImage(
+        sprites,
+        this.sX, this.sY,
+        this.w, this.h,
+        (this.x + this.w), this.y,
+        this.w, this.h
+      );
+    }
   }
 }
 
@@ -140,23 +144,26 @@ const Pages = {
   START: {
     init() {
       globals.flappyBird = createFlappyBird();
+      globals.floor = createFloor();
 
     },
     draw(ctx) {
       background.draw(ctx);
-      floor.draw(ctx);
+      globals.floor.draw(ctx);
       getReadyMessage.draw(ctx);
       globals.flappyBird.draw(ctx);
     },
     click() {
       setActivePage(Pages.GAME)
     },
-    update() { }
+    update() {
+      globals.floor.update();
+    }
   },
   GAME: {
     draw(ctx) {
       background.draw(ctx);
-      floor.draw(ctx);
+      globals.floor.draw(ctx);
       globals.flappyBird.draw(ctx);
     },
     click() {
