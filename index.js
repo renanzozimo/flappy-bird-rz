@@ -8,10 +8,10 @@ const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 
 const flappyBird = {
-  spriteX: 0,
-  spriteY: 0,
-  width: 33,
-  height: 24,
+  sX: 0,
+  sY: 0,
+  w: 33,
+  h: 24,
   x: 10,
   y: 50,
   gravity: .25,
@@ -23,44 +23,44 @@ const flappyBird = {
   draw(ctx) {
     ctx.drawImage(
       sprites,
-      this.spriteX, this.spriteY,
-      this.width, this.height,
+      this.sX, this.sY,
+      this.w, this.h,
       this.x, this.y,
-      this.width, this.height
+      this.w, this.h
     );
   }
 }
 
 const floor = {
-  spriteX: 0,
-  spriteY: 610,
-  width: 223,
-  height: 112,
+  sX: 0,
+  sY: 610,
+  w: 223,
+  h: 112,
   x: 0,
   y: canvas.height - 112,
   draw(ctx) {
     ctx.drawImage(
       sprites,
-      this.spriteX, this.spriteY,
-      this.width, this.height,
+      this.sX, this.sY,
+      this.w, this.h,
       this.x, this.y,
-      this.width, this.height
+      this.w, this.h
     );
     ctx.drawImage(
       sprites,
-      this.spriteX, this.spriteY,
-      this.width, this.height,
-      (this.x + this.width), this.y,
-      this.width, this.height
+      this.sX, this.sY,
+      this.w, this.h,
+      (this.x + this.w), this.y,
+      this.w, this.h
     );
   }
 }
 
 const background = {
-  spriteX: 390,
-  spriteY: 0,
-  width: 275,
-  height: 204,
+  sX: 390,
+  sY: 0,
+  w: 275,
+  h: 204,
   x: 0,
   y: canvas.height - 204,
   draw(ctx) {
@@ -70,17 +70,17 @@ const background = {
 
     ctx.drawImage(
       sprites,
-      this.spriteX, this.spriteY,
-      this.width, this.height,
+      this.sX, this.sY,
+      this.w, this.h,
       this.x, this.y,
-      this.width, this.height
+      this.w, this.h
     );
     ctx.drawImage(
       sprites,
-      this.spriteX, this.spriteY,
-      this.width, this.height,
-      (this.x + this.width), this.y,
-      this.width, this.height
+      this.sX, this.sY,
+      this.w, this.h,
+      (this.x + this.w), this.y,
+      this.w, this.h
     );
   }
 }
