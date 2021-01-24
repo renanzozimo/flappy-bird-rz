@@ -67,6 +67,97 @@ function createFlappyBird() {
   }
 }
 
+function createPipes() {
+  return {
+    w: 52,
+    h: 400,
+    top: {
+      sx: 52,
+      sy: 169,
+    },
+    bottom: {
+      sx: 0,
+      sy: 169,
+    },
+    speed: 0,
+    spacement: 200,
+    draw(ctx) {
+
+      this.pairs.forEach(pair => {
+        const randomY = pair.y;
+        const waySpacement = 90;
+
+        const topX = pair.x;
+        const topY = randomY;
+        ctx.drawImage(
+          sprites,
+          this.top.sx, this.top.sy,
+          this.w, this.h,
+          topX, topY,
+          this.w, this.h
+        );
+
+        const bottomX = pair.x;
+        const bottomY = 0 + this.h + waySpacement + randomY;
+        ctx.drawImage(
+          sprites,
+          this.bottom.sx, this.bottom.sy,
+          this.w, this.h,
+          bottomX, bottomY,
+          this.w, this.h
+        );
+
+        pair.top = {
+          x: topX,
+          y: this.h + topY,
+        }
+
+        pair.bottom = {
+          x: bottomX,
+          y: bottomY,
+        }
+      });
+    },
+    hasCollisionWithFlappyBird(pair) {
+      const birdsHead = globals.flappyBird.y;
+      const birdsFeet = globals.flappyBird.y + globals.flappyBird.h - 10;
+
+      if (globals.flappyBird.x + globals.flappyBird.w >= pair.x) {
+        if (birdsHead <= pair.top.y) {
+          return true;
+        }
+
+        if (birdsFeet >= pair.bottom.y) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    pairs: [],
+    update() {
+      if (frames % this.spacement === 0) {
+        this.pairs.push({
+          x: canvas.width,
+          y: -150 * (Math.random() + 1),
+        })
+      }
+
+      this.pairs.forEach(pair => {
+        pair.x = pair.x - 1;
+
+        if (this.hasCollisionWithFlappyBird(pair)) {
+          setActivePage(Pages.START)
+        }
+
+        if (pair.x + this.w <= 0) {
+          this.pairs.shift();
+        }
+      });
+    }
+  }
+}
+
 const getReadyMessage = {
   sX: 134,
   sY: 0,
@@ -161,23 +252,23 @@ const Pages = {
       globals.flappyBird = createFlappyBird();
       globals.floor = createFloor();
 
+      globals.pipes = createPipes();
     },
     draw(ctx) {
       background.draw(ctx);
       globals.floor.draw(ctx);
-      getReadyMessage.draw(ctx);
       globals.flappyBird.draw(ctx);
+      getReadyMessage.draw(ctx);
     },
     click() {
       setActivePage(Pages.GAME)
     },
-    update() {
-      globals.floor.update();
-    }
+    update() {}
   },
   GAME: {
     draw(ctx) {
       background.draw(ctx);
+      globals.pipes.draw(ctx);
       globals.floor.draw(ctx);
       globals.flappyBird.draw(ctx);
     },
@@ -186,6 +277,7 @@ const Pages = {
     },
     update(ctx) {
       globals.flappyBird.update(ctx);
+      globals.pipes.update();
       globals.floor.update();
     }
   }
