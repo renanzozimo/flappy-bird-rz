@@ -1,6 +1,7 @@
 console.log('Flappy Bird - Renan Zózimo');
 console.log('https://www.renanzozimo.github.io');
 
+let frames = 0;
 const sprites = new Image();
 sprites.src = './sprites.png';
 
@@ -28,7 +29,7 @@ function createFlappyBird() {
       this.speed = - this.jumpForce;
     },
     update() {
-      if (this.collidingBottom(floor)) {
+      if (globals.floor && this.collidingBottom(globals.floor)) {
         hitSound.play();
 
         setTimeout(() => {
@@ -40,10 +41,24 @@ function createFlappyBird() {
       this.speed = this.speed + this.gravity;
       this.y = this.y + this.speed
     },
+    movements: [
+      { sX: 0, sY: 0 },
+      { sX: 0, sY: 26 },
+      { sX: 0, sY: 52 },
+      { sX: 0, sY: 26 },
+    ],
+    currentFrame: 0,
+    setCurrentFrame() {
+      if(frames % 4 === 0) {
+        this.currentFrame = (1 + this.currentFrame) % this.movements.length
+      }
+    },
     draw(ctx) {
+      this.setCurrentFrame();
+      const { sX, sY } = this.movements[this.currentFrame];
       ctx.drawImage(
         sprites,
-        this.sX, this.sY,
+        sX, sY,
         this.w, this.h,
         this.x, this.y,
         this.w, this.h
@@ -171,6 +186,7 @@ const Pages = {
     },
     update(ctx) {
       globals.flappyBird.update(ctx);
+      globals.floor.update();
     }
   }
 }
@@ -180,6 +196,7 @@ function loop() {
   activePage.draw(context)
   activePage.update(context)
 
+  frames = frames + 1;
   requestAnimationFrame(loop);
 }
 
