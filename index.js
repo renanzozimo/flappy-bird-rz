@@ -4,30 +4,51 @@ console.log('https://www.renanzozimo.github.io');
 const sprites = new Image();
 sprites.src = './sprites.png';
 
+const hitSound = new Audio();
+hitSound.src = './effects/hit.wav';
+
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 
-const flappyBird = {
-  sX: 0,
-  sY: 0,
-  w: 33,
-  h: 24,
-  x: 10,
-  y: 50,
-  gravity: .25,
-  speed: 0,
-  update() {
-    this.speed = this.speed + this.gravity;
-    this.y = this.y + this.speed
-  },
-  draw(ctx) {
-    ctx.drawImage(
-      sprites,
-      this.sX, this.sY,
-      this.w, this.h,
-      this.x, this.y,
-      this.w, this.h
-    );
+function createFlappyBird() {
+  return {
+    sX: 0,
+    sY: 0,
+    w: 33,
+    h: 24,
+    x: 10,
+    y: 50,
+    gravity: .25,
+    speed: 0,
+    jumpForce: 4.6,
+    collidingBottom(target) {
+      return this.y + this.h >= target.y
+    },
+    jump() {
+      this.speed = - this.jumpForce;
+    },
+    update() {
+      if (this.collidingBottom(floor)) {
+        hitSound.play();
+
+        setTimeout(() => {
+          setActivePage(Pages.START)
+        }, 500);
+        return;
+      }
+
+      this.speed = this.speed + this.gravity;
+      this.y = this.y + this.speed
+    },
+    draw(ctx) {
+      ctx.drawImage(
+        sprites,
+        this.sX, this.sY,
+        this.w, this.h,
+        this.x, this.y,
+        this.w, this.h
+      );
+    }
   }
 }
 
@@ -102,18 +123,30 @@ const background = {
     );
   }
 }
+
+const globals = {
+
+}
 let activePage = {};
 function setActivePage(page) {
   activePage = page;
+
+  if (activePage.init) {
+    activePage.init();
+  }
 }
 
 const Pages = {
   START: {
+    init() {
+      globals.flappyBird = createFlappyBird();
+
+    },
     draw(ctx) {
       background.draw(ctx);
       floor.draw(ctx);
       getReadyMessage.draw(ctx);
-      flappyBird.draw(ctx);
+      globals.flappyBird.draw(ctx);
     },
     click() {
       setActivePage(Pages.GAME)
@@ -124,10 +157,13 @@ const Pages = {
     draw(ctx) {
       background.draw(ctx);
       floor.draw(ctx);
-      flappyBird.draw(ctx);
+      globals.flappyBird.draw(ctx);
+    },
+    click() {
+      globals.flappyBird.jump();
     },
     update(ctx) {
-      flappyBird.update(ctx);
+      globals.flappyBird.update(ctx);
     }
   }
 }
