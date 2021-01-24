@@ -102,17 +102,49 @@ const background = {
     );
   }
 }
+let activePage = {};
+function setActivePage(page) {
+  activePage = page;
+}
+
+const Pages = {
+  START: {
+    draw(ctx) {
+      background.draw(ctx);
+      floor.draw(ctx);
+      getReadyMessage.draw(ctx);
+      flappyBird.draw(ctx);
+    },
+    click() {
+      setActivePage(Pages.GAME)
+    },
+    update() { }
+  },
+  GAME: {
+    draw(ctx) {
+      background.draw(ctx);
+      floor.draw(ctx);
+      flappyBird.draw(ctx);
+    },
+    update(ctx) {
+      flappyBird.update(ctx);
+    }
+  }
+}
 
 function loop() {
 
-  flappyBird.update();
-
-  background.draw(context);
-  floor.draw(context);
-  getReadyMessage.draw(context)
-  flappyBird.draw(context);
+  activePage.draw(context)
+  activePage.update(context)
 
   requestAnimationFrame(loop);
 }
 
+window.addEventListener('click', function () {
+  if (activePage?.click) {
+    activePage.click();
+  }
+});
+
+setActivePage(Pages.START)
 loop();
